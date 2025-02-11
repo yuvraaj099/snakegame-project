@@ -4,7 +4,7 @@
 <h2>Overview</h2>
 
 <br>This is a simple Snake game implemented in C++ using the console. The game allows players to control a snake to collect food while avoiding collisions with the walls or itself. The game supports different speed levels and displays the score.
-
+<br>
 <h2>Features</h2>
 
 <br>● Classic snake movement (Up, Down, Left, Right)
@@ -16,20 +16,20 @@
 <br>● Adjustable speed levels (Slow, Medium, Fast)
 
 <br>● Console-based graphics
-
+<br>
 <h2>Requirements</h2>
 
 <br>● Windows OS (due to windows.h and conio.h dependencies)
 
 <br>● C++ compiler (MinGW for Windows recommended)
-
+<br>
 <h2>Compilation & Execution</h2>
 
 <h3>Using g++ (MinGW on Windows):</h3>
 
  <br>g++ -o snake_game snake_game.cpp -std=c++11 -static-libstdc++ -static-libgcc
  snake_game.exe
-
+<br>
 <h2>Controls</h2>
 
 <br>● W - Move Up
@@ -45,7 +45,7 @@
 <br>● 2 - Set Medium Speed
 
 <br>● 3 - Set Fast Speed
-
+<br>
 <h2>Game Rules</h2>
 
 <br>● The snake moves automatically in the chosen direction.
@@ -55,7 +55,7 @@
 <br>● The game ends if the snake hits the border or itself.
 
 <br>● The score increases when food is eaten.
-
+<br>
 <h2>Structure</h2>
 
 <br>● Point struct: Represents coordinates on the board.
@@ -65,7 +65,7 @@
 <br>● Board class: Manages the game state, food placement, and rendering.
 
 <br>● main() function: Initializes the game loop and handles user input.
-
+<br>
 <h2>Future Enhancements</h2>
 
 <br>● Add obstacles for more challenges.
@@ -73,7 +73,7 @@
 <br>● Implement a high-score system.
 
 <br>● Improve UI with better graphics.
-
+<br>
 <h2>License</h2>
 
 This project is open-source and free to use. Modify it as you like!
