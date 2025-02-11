@@ -73,7 +73,7 @@ This is a simple Snake game implemented in C++ using the console. The game allow
 <br>● Implement a high-score system.
 
 <br>● Improve UI with better graphics.
-<br>
+<br><br><br>
 <h2>License</h2>
 
 This project is open-source and free to use. Modify it as you like!
