@@ -29,10 +29,10 @@ This is a simple Snake game implemented in C++ using the console. The game allow
 
  <br>g++ -o snake_game snake_game.cpp -std=c++11 -static-libstdc++ -static-libgcc
  snake_game.exe
-<br>
+<br><br><br>
 <h2>Controls</h2>
 
-<br>● W - Move Up
+● W - Move Up
 
 <br>● A - Move Left
 
@@ -45,10 +45,10 @@ This is a simple Snake game implemented in C++ using the console. The game allow
 <br>● 2 - Set Medium Speed
 
 <br>● 3 - Set Fast Speed
-<br>
+<br><br><br>
 <h2>Game Rules</h2>
 
-<br>● The snake moves automatically in the chosen direction.
+● The snake moves automatically in the chosen direction.
 
 <br>● The snake grows when it eats food.
 
