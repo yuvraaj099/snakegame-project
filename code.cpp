@@ -1,4 +1,4 @@
-A#include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <conio.h> // for kbhit and getch
 #include <windows.h>
 
