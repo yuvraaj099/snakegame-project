@@ -7,7 +7,7 @@ This is a simple Snake game implemented in C++ using the console. The game allow
 <br><br>
 <h2>Features</h2>
 
-<br>● Classic snake movement (Up, Down, Left, Right)
+● Classic snake movement (Up, Down, Left, Right)
 
 <br>● Food spawning and score tracking
 
