@@ -1,78 +1,78 @@
 <h1>Snake Game in C++</h1>
 
-Overview
+<h3>Overview</h3>
 
-This is a simple Snake game implemented in C++ using the console. The game allows players to control a snake to collect food while avoiding collisions with the walls or itself. The game supports different speed levels and displays the score.
+<br>This is a simple Snake game implemented in C++ using the console. The game allows players to control a snake to collect food while avoiding collisions with the walls or itself. The game supports different speed levels and displays the score.
 
-Features
+<h2>Features</h2>
 
-Classic snake movement (Up, Down, Left, Right)
+<br>● Classic snake movement (Up, Down, Left, Right)
 
-Food spawning and score tracking
+<br>● Food spawning and score tracking
 
-Collision detection (walls and self)
+<br>● Collision detection (walls and self)
 
-Adjustable speed levels (Slow, Medium, Fast)
+<br>● Adjustable speed levels (Slow, Medium, Fast)
 
-Console-based graphics
+<br>● Console-based graphics
 
-Requirements
+<h2>Requirements</h2>
 
-Windows OS (due to windows.h and conio.h dependencies)
+<br>● Windows OS (due to windows.h and conio.h dependencies)
 
-C++ compiler (MinGW for Windows recommended)
+<br>● C++ compiler (MinGW for Windows recommended)
 
-Compilation & Execution
+<h2>Compilation & Execution</h2>
 
-Using g++ (MinGW on Windows):
+<h3>Using g++ (MinGW on Windows):</h3>
 
- g++ -o snake_game snake_game.cpp -std=c++11 -static-libstdc++ -static-libgcc
+ <br>g++ -o snake_game snake_game.cpp -std=c++11 -static-libstdc++ -static-libgcc
  snake_game.exe
 
-Controls
+<h2>Controls</h2>
 
-W - Move Up
+<br>● W - Move Up
 
-A - Move Left
+<br>● A - Move Left
 
-S - Move Down
+<br>● S - Move Down
 
-D - Move Right
+<br>● D - Move Right
 
-1 - Set Slow Speed
+<br>● 1 - Set Slow Speed
 
-2 - Set Medium Speed
+<br>● 2 - Set Medium Speed
 
-3 - Set Fast Speed
+<br>● 3 - Set Fast Speed
 
-Game Rules
+<h2>Game Rules</h2>
 
-The snake moves automatically in the chosen direction.
+<br>● The snake moves automatically in the chosen direction.
 
-The snake grows when it eats food.
+<br>● The snake grows when it eats food.
 
-The game ends if the snake hits the border or itself.
+<br>● The game ends if the snake hits the border or itself.
 
-The score increases when food is eaten.
+<br>● The score increases when food is eaten.
 
-Structure
+<h2>Structure</h2>
 
-Point struct: Represents coordinates on the board.
+<br>● Point struct: Represents coordinates on the board.
 
-Snake class: Handles movement, growth, and collision detection.
+<br>● Snake class: Handles movement, growth, and collision detection.
 
-Board class: Manages the game state, food placement, and rendering.
+<br>● Board class: Manages the game state, food placement, and rendering.
 
-main() function: Initializes the game loop and handles user input.
+<br>● main() function: Initializes the game loop and handles user input.
 
-Future Enhancements
+<h2>Future Enhancements</h2>
 
-Add obstacles for more challenges.
+<br>● Add obstacles for more challenges.
 
-Implement a high-score system.
+<br>● Implement a high-score system.
 
-Improve UI with better graphics.
+<br>● Improve UI with better graphics.
 
-License
+<h2>License</h2>
 
 This project is open-source and free to use. Modify it as you like!
