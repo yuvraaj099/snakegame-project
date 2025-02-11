@@ -1,266 +1,78 @@
-A#include <bits/stdc++.h>
-#include <conio.h> // for kbhit and getch
-#include <windows.h>
+<h1>Snake Game in C++</h1>
 
-using namespace std;
+Overview
 
-#define MAX_LENGTH 200
-#define BOARD_WIDTH 50
-#define BOARD_HEIGHT 20
+This is a simple Snake game implemented in C++ using the console. The game allows players to control a snake to collect food while avoiding collisions with the walls or itself. The game supports different speed levels and displays the score.
 
-// Directions
-const char DIR_UP = 'U';
-const char DIR_DOWN = 'D';
-const char DIR_LEFT = 'L';
-const char DIR_RIGHT = 'R';
+Features
 
-// Point structure to represent coordinates
-struct Point {
-    int xCoord, yCoord;
-    Point() {}
-    Point(int x, int y) : xCoord(x), yCoord(y) {}
-};
+Classic snake movement (Up, Down, Left, Right)
 
-// Snake class
-class Snake {
-    int length;
-    char direction;
-public:
-    Point body[MAX_LENGTH];
-    Snake(int x, int y) {
-        length = 3;  // Start with 3 body parts
-        body[0] = Point(x, y);  // Snake head
-        body[1] = Point(x - 1, y);  // First body part
-        body[2] = Point(x - 2, y);  // Second body part
-        direction = DIR_RIGHT;
-    }
+Food spawning and score tracking
 
-    int getLength() { 
-        return length; 
-    }
+Collision detection (walls and self)
 
-    void changeDirection(char newDirection) {
-        if ((newDirection == DIR_UP && direction != DIR_DOWN) ||
-            (newDirection == DIR_DOWN && direction != DIR_UP) ||
-            (newDirection == DIR_LEFT && direction != DIR_RIGHT) ||
-            (newDirection == DIR_RIGHT && direction != DIR_LEFT)) {
-            direction = newDirection;
-        }
-    }
+Adjustable speed levels (Slow, Medium, Fast)
 
-    bool move(Point food) {
-        for (int i = length - 1; i > 0; i--) {
-            body[i] = body[i - 1];
-        }
+Console-based graphics
 
-        switch (direction) {
-            case DIR_UP: body[0].yCoord--; break;
-            case DIR_DOWN: body[0].yCoord++; break;
-            case DIR_LEFT: body[0].xCoord--; break;
-            case DIR_RIGHT: body[0].xCoord++; break;
-        }
+Requirements
 
-        // Check if the snake hits the border
-        if (body[0].xCoord < 1 || body[0].xCoord >= BOARD_WIDTH ||
-            body[0].yCoord < 1 || body[0].yCoord >= BOARD_HEIGHT) {
-            return false;
-        }
+Windows OS (due to windows.h and conio.h dependencies)
 
-        // Check if the snake bites itself
-        for (int i = 1; i < length; i++) {
-            if (body[0].xCoord == body[i].xCoord && body[0].yCoord == body[i].yCoord) {
-                return false;
-            }
-        }
+C++ compiler (MinGW for Windows recommended)
 
-        // Check if the snake eats food
-        if (body[0].xCoord == food.xCoord && body[0].yCoord == food.yCoord) {
-            body[length] = Point(body[length - 1].xCoord, body[length - 1].yCoord);
-            length++;
-        }
+Compilation & Execution
 
-        return true;
-    }
-};
+Using g++ (MinGW on Windows):
 
-// Board class
-class Board {
-    Snake* snake;
-    Point food;
-    int score;
-    const char SNAKE_BODY = '+';  // Snake body
-    const char SNAKE_HEAD = '@';  // Snake head
-    const char FOOD = 'O';        // Food
-    int speed;  // Speed control variable
-public:
-    Board() {
-        spawnFood();
-        snake = new Snake(BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
-        score = 0;
-        speed = 100;  // Default speed (medium speed)
-    }
-    ~Board() { delete snake; }
+ g++ -o snake_game snake_game.cpp -std=c++11 -static-libstdc++ -static-libgcc
+ snake_game.exe
 
-    int getScore() { 
-        return score; 
-    }
+Controls
 
-    void spawnFood() {
-        int x = 1 + rand() % (BOARD_WIDTH - 2);
-        int y = 1 + rand() % (BOARD_HEIGHT - 2);
-        food = Point(x, y);
-    }
+W - Move Up
 
-    void gotoxy(int x, int y) {
-        COORD coord;
-        coord.X = x;
-        coord.Y = y;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-    }
+A - Move Left
 
-    void displayCurrentScore() {
-        gotoxy(BOARD_WIDTH + 2, 0);
-        cout << "Score: " << score;
-    }
+S - Move Down
 
-    void draw() {
-        system("cls");
+D - Move Right
 
-        // Draw borders
-        for (int i = 0; i <= BOARD_WIDTH; i++) {
-            gotoxy(i, 0); cout << "_";
-            gotoxy(i, BOARD_HEIGHT); cout << "_";
-        }
-        for (int i = 1; i <= BOARD_HEIGHT; i++) {
-            gotoxy(0, i); cout << "|";
-            gotoxy(BOARD_WIDTH, i); cout << "|";
-        }
+1 - Set Slow Speed
 
-        // Draw snake head
-        gotoxy(snake->body[0].xCoord, snake->body[0].yCoord);
-        cout << SNAKE_HEAD;
+2 - Set Medium Speed
 
-        // Draw snake body
-        for (int i = 1; i < snake->getLength(); i++) {
-            gotoxy(snake->body[i].xCoord, snake->body[i].yCoord);
-            cout << SNAKE_BODY;
-        }
+3 - Set Fast Speed
 
-        // Draw food
-        gotoxy(food.xCoord, food.yCoord);
-        cout << FOOD;
+Game Rules
 
-        // Display scores
-        displayCurrentScore();
-    }
+The snake moves automatically in the chosen direction.
 
-    bool update() {
-        bool isAlive = snake->move(food);
-        if (!isAlive) return false;
+The snake grows when it eats food.
 
-        if (food.xCoord == snake->body[0].xCoord && food.yCoord == snake->body[0].yCoord) {
-            score++;
-            spawnFood();
-        }
-        return true;
-    }
+The game ends if the snake hits the border or itself.
 
-    void getInput() {
-        if (_kbhit()) {
-            int key = _getch();
-            if (key == 'w' || key == 'W') snake->changeDirection(DIR_UP);
-            else if (key == 'a' || key == 'A') snake->changeDirection(DIR_LEFT);
-            else if (key == 's' || key == 'S') snake->changeDirection(DIR_DOWN);
-            else if (key == 'd' || key == 'D') snake->changeDirection(DIR_RIGHT);
-            else if (key == '1') {  // Slow speed
-                speed = 200;  // Slow speed
-            }
-            else if (key == '2') {  // Medium speed
-                speed = 100;  // Medium speed (default)
-            }
-            else if (key == '3') {  // Fast speed
-                speed = 50;  // Fast speed
-            }
-        }
-    }
+The score increases when food is eaten.
 
-    int getSpeed() {
-        return speed;
-    }
+Structure
 
-    void setSpeed(int newSpeed) {
-        speed = newSpeed;
-    }
+Point struct: Represents coordinates on the board.
 
-    void displayGameOver() {
-        // Clearing the screen and setting the position for game over message
-        system("cls");
+Snake class: Handles movement, growth, and collision detection.
 
-        int centerX = BOARD_WIDTH / 2 - 5;
-        int centerY = BOARD_HEIGHT / 2;
+Board class: Manages the game state, food placement, and rendering.
 
-        // Decorative box
-        gotoxy(centerX - 1, centerY - 1);
-        cout << "***********************";
-        gotoxy(centerX - 1, centerY);
-        cout << "                       ";
-        gotoxy(centerX - 1, centerY + 1);
-        cout << "***********************";
+main() function: Initializes the game loop and handles user input.
 
-        // "Game Over" message
-        gotoxy(centerX, centerY);
-        cout << "    GAME OVER  ";
+Future Enhancements
 
-        // Final score message
-        gotoxy(centerX, centerY + 2);
-        cout << "    Final Score: " << getScore();
+Add obstacles for more challenges.
 
-        // Adding some extra decoration
-        gotoxy(centerX - 1, centerY + 3);
-        cout << "***********************";
-    }
-};
+Implement a high-score system.
 
-// Main function
-int main() {
-    srand(time(0));
+Improve UI with better graphics.
 
-    // Ask for speed level
-    int speedLevel;
-    cout << "Select speed level (1 - Slow, 2 - Medium, 3 - Fast):\n";
-    
-    // Getting the speed level input from the user
-    while (true) {
-        cin >> speedLevel;
-        if (speedLevel == 1 || speedLevel == 2 || speedLevel == 3) {
-            break;  // If valid input, break the loop
-        }
-        else {
-            cout << "Invalid input. Please choose 1 (Slow), 2 (Medium), or 3 (Fast):\n";
-        }
-    }
+License
 
-    // Create the board and set speed based on the user's input
-    Board* board = new Board();
-    if (speedLevel == 1) {
-        board->setSpeed(200);  // Slow speed
-    } else if (speedLevel == 2) {
-        board->setSpeed(100);  // Medium speed
-    } else if (speedLevel == 3) {
-        board->setSpeed(50);   // Fast speed
-    }
-
-    // Game loop
-    while (board->update()) {
-        board->getInput();
-        board->draw();
-        Sleep(board->getSpeed());  // Control speed using Sleep based on user input
-    }
-
-    // Display the Game Over screen
-    board->displayGameOver();
-
-    // Clean up memory
-    delete board;
-    return 0;
-}
+This project is open-source and free to use. Modify it as you like!
