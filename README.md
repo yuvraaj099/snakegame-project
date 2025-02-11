@@ -22,7 +22,7 @@ This is a simple Snake game implemented in C++ using the console. The game allow
 ● Windows OS (due to windows.h and conio.h dependencies)
 
 <br>● C++ compiler (MinGW for Windows recommended)
-<br><br>
+<br><br><br>
 <h2>Compilation & Execution</h2>
 
 <h3>Using g++ (MinGW on Windows):</h3>
@@ -55,20 +55,20 @@ This is a simple Snake game implemented in C++ using the console. The game allow
 <br>● The game ends if the snake hits the border or itself.
 
 <br>● The score increases when food is eaten.
-<br>
+<br><br><br>
 <h2>Structure</h2>
 
-<br>● Point struct: Represents coordinates on the board.
+● Point struct: Represents coordinates on the board.
 
 <br>● Snake class: Handles movement, growth, and collision detection.
 
 <br>● Board class: Manages the game state, food placement, and rendering.
 
 <br>● main() function: Initializes the game loop and handles user input.
-<br>
+<br><br><br>
 <h2>Future Enhancements</h2>
 
-<br>● Add obstacles for more challenges.
+● Add obstacles for more challenges.
 
 <br>● Implement a high-score system.
 
