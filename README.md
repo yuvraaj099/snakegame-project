@@ -16,7 +16,7 @@ This is a simple Snake game implemented in C++ using the console. The game allow
 <br>● Adjustable speed levels (Slow, Medium, Fast)
 
 <br>● Console-based graphics
-<br><br>
+<br><br><br>
 <h2>Requirements</h2>
 
 ● Windows OS (due to windows.h and conio.h dependencies)
