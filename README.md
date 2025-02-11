@@ -1,4 +1,5 @@
 <h1>Snake Game in C++</h1>
+<br>
 
 <h2>Overview</h2>
 
