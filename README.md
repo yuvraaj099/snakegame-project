@@ -4,7 +4,7 @@
 <h2>Overview</h2>
 
 <br>This is a simple Snake game implemented in C++ using the console. The game allows players to control a snake to collect food while avoiding collisions with the walls or itself. The game supports different speed levels and displays the score.
-<br>
+<br><br>
 <h2>Features</h2>
 
 <br>● Classic snake movement (Up, Down, Left, Right)
