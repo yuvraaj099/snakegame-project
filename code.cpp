@@ -225,43 +225,55 @@ public:
 int main() {
     srand(time(0));
 
-    // Ask for speed level
-    int speedLevel;
-    cout << "Select speed level (1 - Slow, 2 - Medium, 3 - Fast):\n";
-    
-    // Getting the speed level input from the user
-    while (true) {
-        cin >> speedLevel;
-        if (speedLevel == 1 || speedLevel == 2 || speedLevel == 3) {
-            break;  // If valid input, break the loop
+    while (true) {  // Game loop for restart functionality
+        // Ask for speed level
+        int speedLevel;
+        cout << "Select speed level (1 - Slow, 2 - Medium, 3 - Fast):\n";
+        
+        // Getting the speed level input from the user
+        while (true) {
+            cin >> speedLevel;
+            if (speedLevel == 1 || speedLevel == 2 || speedLevel == 3) {
+                break;  // If valid input, break the loop
+            }
+            else {
+                cout << "Invalid input. Please choose 1 (Slow), 2 (Medium), or 3 (Fast):\n";
+            }
         }
-        else {
-            cout << "Invalid input. Please choose 1 (Slow), 2 (Medium), or 3 (Fast):\n";
+
+        // Create the board and set speed based on the user's input
+        Board* board = new Board();
+        if (speedLevel == 1) {
+            board->setSpeed(200);  // Slow speed
+        } else if (speedLevel == 2) {
+            board->setSpeed(100);  // Medium speed
+        } else if (speedLevel == 3) {
+            board->setSpeed(50);   // Fast speed
         }
+
+        // Game loop
+        while (board->update()) {
+            board->getInput();
+            board->draw();
+            Sleep(board->getSpeed());  // Control speed using Sleep based on user input
+        }
+
+        // Display the Game Over screen
+        board->displayGameOver();
+
+        // Ask the player if they want to play again
+        char playAgain;
+        cout << "Do you want to play again? (Y/N): ";
+        cin >> playAgain;
+
+        if (playAgain == 'N' || playAgain == 'n') {
+            delete board;
+            break;  // Exit the game loop if the player doesn't want to restart
+        }
+
+        // Clean up memory for restart
+        delete board;
     }
 
-    // Create the board and set speed based on the user's input
-    Board* board = new Board();
-    if (speedLevel == 1) {
-        board->setSpeed(200);  // Slow speed
-    } else if (speedLevel == 2) {
-        board->setSpeed(100);  // Medium speed
-    } else if (speedLevel == 3) {
-        board->setSpeed(50);   // Fast speed
-    }
-
-    // Game loop
-    while (board->update()) {
-        board->getInput();
-        board->draw();
-        Sleep(board->getSpeed());  // Control speed using Sleep based on user input
-    }
-
-    // Display the Game Over screen
-    board->displayGameOver();
-
-    // Clean up memory
-    delete board;
     return 0;
 }
-
