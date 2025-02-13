@@ -60,20 +60,20 @@ public:
             case DIR_RIGHT: body[0].xCoord++; break;
         }
 
-        // Check if the snake hits the border
+        // snake hits border
         if (body[0].xCoord < 1 || body[0].xCoord >= BOARD_WIDTH ||
             body[0].yCoord < 1 || body[0].yCoord >= BOARD_HEIGHT) {
             return false;
         }
 
-        // Check if the snake bites itself
-        for (int i = 1; i < length; i++) {
+        // snake bites itself
+        for (int i = 2; i < length; i++) {
             if (body[0].xCoord == body[i].xCoord && body[0].yCoord == body[i].yCoord) {
                 return false;
             }
         }
 
-        // Check if the snake eats food
+        // snake eats food
         if (body[0].xCoord == food.xCoord && body[0].yCoord == food.yCoord) {
             body[length] = Point(body[length - 1].xCoord, body[length - 1].yCoord);
             length++;
@@ -83,22 +83,23 @@ public:
     }
 };
 
-// Board class
 class Board {
     Snake* snake;
     Point food;
     int score;
+    int speed;  // Speed control 
     const char SNAKE_BODY = '+';  // Snake body
     const char SNAKE_HEAD = '@';  // Snake head
     const char FOOD = 'O';        // Food
-    int speed;  // Speed control variable
+
 public:
     Board() {
         spawnFood();
         snake = new Snake(BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
-        score = 0;
+        score = 0;  // Score resets at the beginning of each game
         speed = 100;  // Default speed (medium speed)
     }
+
     ~Board() { delete snake; }
 
     int getScore() { 
@@ -161,7 +162,7 @@ public:
         if (food.xCoord == snake->body[0].xCoord && food.yCoord == snake->body[0].yCoord) {
             score++;
             spawnFood();
-        }
+        }  
         return true;
     }
 
@@ -176,7 +177,7 @@ public:
                 speed = 200;  // Slow speed
             }
             else if (key == '2') {  // Medium speed
-                speed = 100;  // Medium speed (default)
+                speed = 100;  // Medium speed 
             }
             else if (key == '3') {  // Fast speed
                 speed = 50;  // Fast speed
@@ -192,14 +193,13 @@ public:
         speed = newSpeed;
     }
 
-    void displayGameOver() {
-        // Clearing the screen and setting the position for game over message
+    void displayGameOver(int highestScore) {
+        // Clearing screen and game over
         system("cls");
 
         int centerX = BOARD_WIDTH / 2 - 5;
         int centerY = BOARD_HEIGHT / 2;
 
-        // Decorative box
         gotoxy(centerX - 1, centerY - 1);
         cout << "***********************";
         gotoxy(centerX - 1, centerY);
@@ -207,16 +207,20 @@ public:
         gotoxy(centerX - 1, centerY + 1);
         cout << "***********************";
 
-        // "Game Over" message
+        // game over
         gotoxy(centerX, centerY);
         cout << "    GAME OVER  ";
 
-        // Final score message
+        // Final score
         gotoxy(centerX, centerY + 2);
         cout << "    Final Score: " << getScore();
 
-        // Adding some extra decoration
-        gotoxy(centerX - 1, centerY + 3);
+        // Display highest score
+        gotoxy(centerX, centerY + 3);
+        cout << " Highest Score: " << highestScore;
+
+        // Adding extra decoration
+        gotoxy(centerX - 1, centerY + 4);
         cout << "***********************";
     }
 };
@@ -225,24 +229,25 @@ public:
 int main() {
     srand(time(0));
 
+    int highestScore = 0;  // This will persist throughout multiple games
+
     while (true) {  // Game loop for restart functionality
-        // Ask for speed level
+        // Ask speed level
         int speedLevel;
         cout << "Select speed level (1 - Slow, 2 - Medium, 3 - Fast):\n";
         
-        // Getting the speed level input from the user
         while (true) {
             cin >> speedLevel;
             if (speedLevel == 1 || speedLevel == 2 || speedLevel == 3) {
-                break;  // If valid input, break the loop
+                break;  
             }
             else {
                 cout << "Invalid input. Please choose 1 (Slow), 2 (Medium), or 3 (Fast):\n";
             }
         }
 
-        // Create the board and set speed based on the user's input
-        Board* board = new Board();
+        // Create the board (reset the score to 0)
+        Board* board = new Board();  // Do not pass highest score to Board
         if (speedLevel == 1) {
             board->setSpeed(200);  // Slow speed
         } else if (speedLevel == 2) {
@@ -255,25 +260,30 @@ int main() {
         while (board->update()) {
             board->getInput();
             board->draw();
-            Sleep(board->getSpeed());  // Control speed using Sleep based on user input
+            Sleep(board->getSpeed());  
+        }
+
+        // Update the highest score after the game ends
+        if (board->getScore() > highestScore) {
+            highestScore = board->getScore();  // Update the highest score
         }
 
         // Display the Game Over screen
-        board->displayGameOver();
+        board->displayGameOver(highestScore);
 
-        // Ask the player if they want to play again
+        // Asking player to playagain
         char playAgain;
         cout << "Do you want to play again? (Y/N): ";
         cin >> playAgain;
 
         if (playAgain == 'N' || playAgain == 'n') {
             delete board;
-            break;  // Exit the game loop if the player doesn't want to restart
+            break;  // Exit the game 
         }
 
-        // Clean up memory for restart
+        // For restart
         delete board;
     }
 
     return 0;
-}
+}  
