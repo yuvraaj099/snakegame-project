@@ -1,289 +1,232 @@
-#include <bits/stdc++.h>
-#include <conio.h> // for kbhit and getch
+#include <iostream>
+#include <vector>
 #include <windows.h>
+#include <conio.h>  // For _kbhit() and _getch()
 
 using namespace std;
 
-#define MAX_LENGTH 200
-#define BOARD_WIDTH 50
-#define BOARD_HEIGHT 20
+const int width = 30, height = 20;
 
-// Directions
-const char DIR_UP = 'U';
-const char DIR_DOWN = 'D';
-const char DIR_LEFT = 'L';
-const char DIR_RIGHT = 'R';
-
-// Point structure to represent coordinates
-struct Point {
-    int xCoord, yCoord;
-    Point() {}
-    Point(int x, int y) : xCoord(x), yCoord(y) {}
-};
-
-// Snake class
-class Snake {
-    int length;
-    char direction;
+class SnakeGame {
 public:
-    Point body[MAX_LENGTH];
-    Snake(int x, int y) {
-        length = 3;  // Start with 3 body parts
-        body[0] = Point(x, y);  // Snake head
-        body[1] = Point(x - 1, y);  // First body part
-        body[2] = Point(x - 2, y);  // Second body part
-        direction = DIR_RIGHT;
+    HANDLE console;
+    bool gameOver;
+    int x, y, foodX, foodY, score;
+    vector<pair<int, int>> snake;
+    enum Direction { STOP, LEFT, RIGHT, UP, DOWN };
+    Direction dir;
+    int speed;  // Speed control variable
+    int highestScore;  // Store highest score across all games
+
+    void GotoXY(int x, int y) {
+        COORD coord = { (SHORT)x, (SHORT)y };
+        SetConsoleCursorPosition(console, coord);
     }
 
-    int getLength() { 
-        return length; 
+    void HideCursor() {
+        CONSOLE_CURSOR_INFO cursorInfo;
+        GetConsoleCursorInfo(console, &cursorInfo);
+        cursorInfo.bVisible = false;
+        SetConsoleCursorInfo(console, &cursorInfo);
     }
 
-    void changeDirection(char newDirection) {
-        if ((newDirection == DIR_UP && direction != DIR_DOWN) ||
-            (newDirection == DIR_DOWN && direction != DIR_UP) ||
-            (newDirection == DIR_LEFT && direction != DIR_RIGHT) ||
-            (newDirection == DIR_RIGHT && direction != DIR_LEFT)) {
-            direction = newDirection;
-        }
-    }
+    void Setup() {
+        gameOver = false;
+        dir = RIGHT;  // Starting direction to the right
+        x = width / 2;
+        y = height / 2;
 
-    bool move(Point food) {
-        for (int i = length - 1; i > 0; i--) {
-            body[i] = body[i - 1];
-        }
+        foodX = rand() % width;
+        foodY = rand() % height;
 
-        switch (direction) {
-            case DIR_UP: body[0].yCoord--; break;
-            case DIR_DOWN: body[0].yCoord++; break;
-            case DIR_LEFT: body[0].xCoord--; break;
-            case DIR_RIGHT: body[0].xCoord++; break;
-        }
+        score = 0;
 
-        // snake hits border
-        if (body[0].xCoord < 1 || body[0].xCoord >= BOARD_WIDTH ||
-            body[0].yCoord < 1 || body[0].yCoord >= BOARD_HEIGHT) {
-            return false;
-        }
+        // Initialize the snake with one head and two body parts
+        snake.clear();
+        snake.push_back({x, y});  // Head
+        snake.push_back({x - 1, y}); // First body part
 
-        // snake bites itself
-        for (int i = 2; i < length; i++) {
-            if (body[0].xCoord == body[i].xCoord && body[0].yCoord == body[i].yCoord) {
-                return false;
-            }
-        }
-
-        // snake eats food
-        if (body[0].xCoord == food.xCoord && body[0].yCoord == food.yCoord) {
-            body[length] = Point(body[length - 1].xCoord, body[length - 1].yCoord);
-            length++;
-        }
-
-        return true;
-    }
-};
-
-class Board {
-    Snake* snake;
-    Point food;
-    int score;
-    int speed;  // Speed control 
-    const char SNAKE_BODY = '+';  // Snake body
-    const char SNAKE_HEAD = '@';  // Snake head
-    const char FOOD = 'O';        // Food
-
-public:
-    Board() {
-        spawnFood();
-        snake = new Snake(BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
-        score = 0;  // Score resets at the beginning of each game
+        HideCursor();
         speed = 100;  // Default speed (medium speed)
     }
 
-    ~Board() { delete snake; }
+    void Draw() {
+        GotoXY(0, 0);
 
-    int getScore() { 
-        return score; 
-    }
+        // Draw top border
+        for (int i = 0; i < width + 2; i++) cout << "# ";
+        cout << endl;
 
-    void spawnFood() {
-        int x = 1 + rand() % (BOARD_WIDTH - 2);
-        int y = 1 + rand() % (BOARD_HEIGHT - 2);
-        food = Point(x, y);
-    }
+        // Draw grid with snake and food
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (j == 0) cout << "# ";  // Left boundary
 
-    void gotoxy(int x, int y) {
-        COORD coord;
-        coord.X = x;
-        coord.Y = y;
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-    }
+                // Draw the head
+                if (i == y && j == x) cout << "O ";
+                else if (i == foodY && j == foodX) cout << "* ";  // Food
+                else {
+                    bool print = false;
+                    // Draw snake body
+                    for (auto s : snake) {
+                        if (s.first == j && s.second == i) {
+                            cout << "o ";
+                            print = true;
+                            break;
+                        }
+                    }
+                    if (!print) cout << "  ";  // Empty space
+                }
 
-    void displayCurrentScore() {
-        gotoxy(BOARD_WIDTH + 2, 0);
-        cout << "Score: " << score;
-    }
-
-    void draw() {
-        system("cls");
-
-        // Draw borders
-        for (int i = 0; i <= BOARD_WIDTH; i++) {
-            gotoxy(i, 0); cout << "_";
-            gotoxy(i, BOARD_HEIGHT); cout << "_";
-        }
-        for (int i = 1; i <= BOARD_HEIGHT; i++) {
-            gotoxy(0, i); cout << "|";
-            gotoxy(BOARD_WIDTH, i); cout << "|";
+                if (j == width - 1) cout << "# ";  // Right boundary
+            }
+            cout << endl;
         }
 
-        // Draw snake head
-        gotoxy(snake->body[0].xCoord, snake->body[0].yCoord);
-        cout << SNAKE_HEAD;
-
-        // Draw snake body
-        for (int i = 1; i < snake->getLength(); i++) {
-            gotoxy(snake->body[i].xCoord, snake->body[i].yCoord);
-            cout << SNAKE_BODY;
-        }
-
-        // Draw food
-        gotoxy(food.xCoord, food.yCoord);
-        cout << FOOD;
-
-        // Display scores
-        displayCurrentScore();
+        // Draw bottom border
+        for (int i = 0; i < width + 2; i++) cout << "# ";
+        cout << "\nScore: " << score << endl;
     }
 
-    bool update() {
-        bool isAlive = snake->move(food);
-        if (!isAlive) return false;
-
-        if (food.xCoord == snake->body[0].xCoord && food.yCoord == snake->body[0].yCoord) {
-            score++;
-            spawnFood();
-        }  
-        return true;
-    }
-
-    void getInput() {
+    void Input() {
         if (_kbhit()) {
-            int key = _getch();
-            if (key == 'w' || key == 'W') snake->changeDirection(DIR_UP);
-            else if (key == 'a' || key == 'A') snake->changeDirection(DIR_LEFT);
-            else if (key == 's' || key == 'S') snake->changeDirection(DIR_DOWN);
-            else if (key == 'd' || key == 'D') snake->changeDirection(DIR_RIGHT);
-            else if (key == '1') {  // Slow speed
-                speed = 200;  // Slow speed
-            }
-            else if (key == '2') {  // Medium speed
-                speed = 100;  // Medium speed 
-            }
-            else if (key == '3') {  // Fast speed
-                speed = 50;  // Fast speed
+            switch (_getch()) {
+                case 'a': case 'A': if (dir != RIGHT) dir = LEFT; break;
+                case 'd': case 'D': if (dir != LEFT) dir = RIGHT; break;
+                case 'w': case 'W': if (dir != DOWN) dir = UP; break;
+                case 's': case 'S': if (dir != UP) dir = DOWN; break;
+                case 'x': gameOver = true; break;
+                case '1': speed = 200; break;  // Slow speed
+                case '2': speed = 100; break;  // Medium speed
+                case '3': speed = 50; break;   // Fast speed
+                case '+': if (speed > 10) speed -= 10; break; // Increase speed
+                case '-': if (speed < 200) speed += 10; break; // Decrease speed
             }
         }
     }
 
-    int getSpeed() {
-        return speed;
+    void Logic() {
+        int prevX = snake[0].first, prevY = snake[0].second;
+        int prev2X, prev2Y;
+        snake[0] = {x, y};
+
+        // Update the body parts of the snake
+        for (size_t i = 1; i < snake.size(); i++) {
+            prev2X = snake[i].first;
+            prev2Y = snake[i].second;
+            snake[i] = {prevX, prevY};
+            prevX = prev2X;
+            prevY = prev2Y;
+        }
+
+        // Move the head of the snake based on the current direction
+        switch (dir) {
+            case LEFT: x--; break;
+            case RIGHT: x++; break;
+            case UP: y--; break;
+            case DOWN: y++; break;
+            default: break;
+        }
+
+        // Check if the snake hits the wall
+        if (x < 0 || x >= width || y < 0 || y >= height) gameOver = true;
+
+        // Check if the snake collides with itself
+        for (size_t i = 1; i < snake.size(); i++) {
+            if (snake[i].first == x && snake[i].second == y) gameOver = true;
+        }
+
+        // Check if the snake eats food
+        if (x == foodX && y == foodY) {
+            score += 1;
+            snake.push_back({foodX, foodY});  // Add a new body part
+
+            bool validFoodPosition;
+            do {
+                validFoodPosition = true;
+                foodX = rand() % width;
+                foodY = rand() % height;
+
+                // Ensure food doesn't spawn on the snake
+                for (const auto& segment : snake) {
+                    if (segment.first == foodX && segment.second == foodY) {
+                        validFoodPosition = false;
+                        break;
+                    }
+                }
+            } while (!validFoodPosition);
+        }
     }
 
-    void setSpeed(int newSpeed) {
-        speed = newSpeed;
-    }
-
-    void displayGameOver(int highestScore) {
-        // Clearing screen and game over
+    void displayGameOver() {
+        // Clearing screen and game over message
         system("cls");
 
-        int centerX = BOARD_WIDTH / 2 - 5;
-        int centerY = BOARD_HEIGHT / 2;
+        int centerX = width / 2 - 5;
+        int centerY = height / 2;
 
-        gotoxy(centerX - 1, centerY - 1);
+        GotoXY(centerX - 1, centerY - 1);
         cout << "***********************";
-        gotoxy(centerX - 1, centerY);
+        GotoXY(centerX - 1, centerY);
         cout << "                       ";
-        gotoxy(centerX - 1, centerY + 1);
+        GotoXY(centerX - 1, centerY + 1);
         cout << "***********************";
 
-        // game over
-        gotoxy(centerX, centerY);
+        // Game over message
+        GotoXY(centerX, centerY);
         cout << "    GAME OVER  ";
 
-        // Final score
-        gotoxy(centerX, centerY + 2);
-        cout << "    Final Score: " << getScore();
+        // Display final score
+        GotoXY(centerX, centerY + 2);
+        cout << "    Final Score   : " << score;
 
         // Display highest score
-        gotoxy(centerX, centerY + 3);
-        cout << " Highest Score: " << highestScore;
+        GotoXY(centerX, centerY + 3);
+        cout << "    Highest Score : " << highestScore;
 
         // Adding extra decoration
-        gotoxy(centerX - 1, centerY + 4);
+        GotoXY(centerX - 1, centerY + 4);
         cout << "***********************";
+    }
+
+    void playAgainPrompt() {
+        char playAgain;
+        cout << "\n\nDo you want to play again? (y/n): ";
+        cin >> playAgain;
+        if (playAgain == 'y' || playAgain == 'Y') {
+            gameOver = false;
+            Setup();  // Reset the game
+            Run();    // Start a new game
+        } else {
+            cout << "\nThanks for playing! Goodbye!" << endl;
+        }
+    }
+
+public:
+    SnakeGame() : console(GetStdHandle(STD_OUTPUT_HANDLE)), highestScore(0) {}
+
+    void Run() {
+        Setup();
+        while (!gameOver) {
+            Draw();
+            Input();
+            Logic();
+            Sleep(speed);  // Adjust speed
+        }
+
+        if (score > highestScore) {
+            highestScore = score;
+        }
+
+        displayGameOver();
+
+        // Ask if user wants to play again
+        playAgainPrompt();
     }
 };
 
-// Main function
 int main() {
-    srand(time(0));
-
-    int highestScore = 0;  // This will persist throughout multiple games
-
-    while (true) {  // Game loop for restart functionality
-        // Ask speed level
-        int speedLevel;
-        cout << "Select speed level (1 - Slow, 2 - Medium, 3 - Fast):\n";
-        
-        while (true) {
-            cin >> speedLevel;
-            if (speedLevel == 1 || speedLevel == 2 || speedLevel == 3) {
-                break;  
-            }
-            else {
-                cout << "Invalid input. Please choose 1 (Slow), 2 (Medium), or 3 (Fast):\n";
-            }
-        }
-
-        // Create the board (reset the score to 0)
-        Board* board = new Board();  // Do not pass highest score to Board
-        if (speedLevel == 1) {
-            board->setSpeed(200);  // Slow speed
-        } else if (speedLevel == 2) {
-            board->setSpeed(100);  // Medium speed
-        } else if (speedLevel == 3) {
-            board->setSpeed(50);   // Fast speed
-        }
-
-        // Game loop
-        while (board->update()) {
-            board->getInput();
-            board->draw();
-            Sleep(board->getSpeed());  
-        }
-
-        // Update the highest score after the game ends
-        if (board->getScore() > highestScore) {
-            highestScore = board->getScore();  // Update the highest score
-        }
-
-        // Display the Game Over screen
-        board->displayGameOver(highestScore);
-
-        // Asking player to playagain
-        char playAgain;
-        cout << "Do you want to play again? (Y/N): ";
-        cin >> playAgain;
-
-        if (playAgain == 'N' || playAgain == 'n') {
-            delete board;
-            break;  // Exit the game 
-        }
-
-        // For restart
-        delete board;
-    }
-
+    SnakeGame game;
+    game.Run();
     return 0;
-}  
+}
